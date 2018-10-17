@@ -1,0 +1,26 @@
+[ClientToServer]
+# 服务器用来生成 MsgProc
+1001 = "usercmd.MsgLogin"
+1006 = "usercmd.MsgMove"
+1007 = "usercmd.MsgRun"
+1009 = "usercmd.MsgRelife"
+1016 = "usercmd.ClientHeartBeat"
+1020 = "usercmd.MsgSceneChat"
+1050 = "usercmd.MsgCastSkill"
+
+
+[ServerToClient]
+# 客户端用来生成 MsgProc
+1001 = "usercmd.MsgLoginResult"
+1002 = "usercmd.MsgTop"
+1003 = "usercmd.MsgAddPlayer"
+1004 = "usercmd.MsgRemovePlayer"
+1009 = "usercmd.MsgS2CRelife"
+1010 = "usercmd.MsgDeath"
+1011 = "usercmd.MsgEndRoom"
+1013 = "usercmd.MsgRefreshPlayer"
+1016 = "usercmd.ClientHeartBeat"
+1021 = "usercmd.MsgActCloseSocket"
+1031 = "usercmd.MsgSceneTCP"
+1032 = "usercmd.MsgSceneUDP"
+

@@ -1,0 +1,14 @@
+{
+    "global":{
+        "loglevel":"0",
+
+        "xmlcfg":"../config/xml/",
+        "terraincfg":"../config/terrain/",
+        "aicfg":"../config/ai/",
+        "skillcfg":"../config/bev_skill/"
+    },
+    "room":{
+        "listen":":9001",
+        "log":"./log/log_room.log"
+    }
+}

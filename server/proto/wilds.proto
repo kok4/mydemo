@@ -1,0 +1,231 @@
+syntax = "proto2";
+
+package usercmd;
+
+enum MsgTypeCmd {
+	Login             = 1001;  // 登录
+	Top               = 1002;  // 排行榜
+	AddPlayer         = 1003;  // 添加玩家
+	RemovePlayer      = 1004;  // 删除玩家
+	Move              = 1006;  // 移动
+	Run			      = 1007;  // 奔跑
+	ReLife			  = 1009;  // 复活
+	Death			  = 1010; // 死亡
+	EndRoom			  = 1011; // 结束
+	RefreshPlayer     = 1013; // 刷新玩家数据
+	HeartBeat         = 1016; // 心跳包
+	SceneChat	      = 1020; // 场景内聊天
+	ActCloseSocket    = 1021; // 主动退游戏
+	ErrorMsg          = 1025; // 错误消息
+	SceneTCP          = 1031; // 更新场景数据(TCP)
+	SceneUDP          = 1032; // 更新场景数据(UDP)
+
+	CastSkill		  = 1050;	// 释放技能
+};
+
+// 请求登录
+message MsgLogin {
+    required string name     = 1; // 昵称
+}
+
+// 返回登录
+message MsgLoginResult {
+    required bool ok				= 1;  // 是否成功
+    required uint64 id				= 2;  // ID
+    optional string name			= 3;  // 玩家名字
+	repeated MsgPlayer others		= 4;  // 场景所有玩家
+	required uint32 frame			= 5;  // 当前帧
+	required uint32 ballId          = 8;  // 自己的球id
+	repeated MsgBall balls          = 9;  // 所有的球
+	repeated MsgPlayerBall playerballs  = 10; // 所有玩家球
+    optional uint32 leftTime        = 14; // 房间剩余时间
+}
+
+
+// 返回排行榜Top
+message MsgTop {
+	repeated MsgPlayer players = 1; // 玩家列表
+	optional uint32 EndTime    = 3; // 剩余秒数
+	optional uint32 Rank       = 4; // 自己排名
+	optional uint32 KillNum    = 5; // 自己击杀分数
+}
+
+message MsgSceneTCP {
+	repeated BallEat   eats    = 1; // 吃的球
+	repeated MsgBall   adds    = 2; // 添加的球
+	repeated uint32	   removes = 3; // 删除球
+	repeated HitMsg   hits    = 4;  // 攻击
+	repeated MsgPlayerBall   addPlayers = 5; // 添加的玩家球
+	repeated uint32	   removePlayers = 6; // 删除玩家球
+}
+
+message MsgSceneUDP {
+	repeated BallMove  moves   = 1; // 更新所有球移动
+	required uint32    frame   = 2; // 当前帧
+}
+
+// 玩家数据
+message MsgPlayer {
+    required uint64 id       = 1;  // 玩家ID
+    required string name     = 2;  // 玩家名字
+	optional bool IsLive  = 4;  // 死活
+	optional MsgPlayerSnap SnapInfo = 5;//位置信息
+	required uint32 ballId = 6;//球id
+	optional uint32 curexp  = 7; // 当前初始经验
+	optional uint32 curmp    = 8; // 当前的MP（蓝条）
+	optional uint32 curhp    = 10; // 当前的HP（红条）
+	optional int32 bombNum = 12;	//炸弹数量
+	optional int32 hammerNum = 13;	//锤子数量
+}
+
+// 返回添加玩家 AddPlayer
+message MsgAddPlayer {
+    required MsgPlayer player = 1; // 玩家
+}
+
+// 返回刷新玩家数据
+message MsgRefreshPlayer
+{
+	required MsgPlayer player = 1; // 玩家
+}
+
+// 返回删除玩家 RemovePlayer
+message MsgRemovePlayer {
+    required uint64 id = 1; // 玩家ID
+}
+
+// 请求移动 Move
+message MsgMove {
+    required int32 angle   = 1;   // 移动方向
+    required int32 power = 2;   // 力
+    optional uint32 face  = 3;  // 球朝向的目标球ID
+}
+
+// 请求复活 ReLife
+message MsgRelife {
+}
+
+// 返回复活 ReLife
+message MsgS2CRelife {
+	optional string name     = 1; //玩家名字
+	optional uint32 frame    = 2; // 当前帧
+	required MsgPlayerSnap SnapInfo = 3;//player
+    optional uint32 curhp    = 4; // 当前的HP（红条）
+	optional uint32 curmp    = 5; // 当前的MP（蓝条）
+}
+
+
+// 返回死亡 Death
+message MsgDeath {
+	required uint32 maxScore = 1;// 积分(经验)
+	required uint64 killId   = 2;// 杀手id(玩家非0)
+	required string killName = 3;// 杀手名字
+	required uint64 Id = 4;//死者
+}
+
+// 返回结束 EndRoom
+message MsgEndRoom {
+// 可以自定义游戏结果字段
+}
+
+// 客户端心跳包
+message ClientHeartBeat
+{
+}
+
+message MsgActCloseSocket
+{
+}
+
+// 释放技能 CastSkill
+message MsgCastSkill {
+	optional uint32 skillid = 1;
+}
+
+
+//奔跑
+message MsgRun
+{
+};
+
+//聊天命令命令
+message MsgSceneChat
+{
+	required string Msg = 1;	//消息
+	required uint64 Id = 2;//id
+};
+
+
+//位置同步
+message MsgPlayerSnap
+{
+	required float Snapx = 1;//x
+	required float Snapy = 2;//y
+	required float Angle = 3;//角度
+	required uint64 Id = 4;//id
+};// 每个小球的定义
+message MsgBall {
+    required uint32  id    = 1;  // 球ID
+    required int32   type  = 2;  // 用户类型，1为玩家，2为静态食物，3为齿轮, 4为用户吐出来的球
+	required int32   x     = 3;  // 坐标x
+	required int32   y     = 4;  // 坐标y
+}
+
+
+// 玩家球
+message MsgPlayerBall {
+    required uint32  id    = 1;  // 球ID
+    optional uint32  hp    = 3;  // hp
+    optional uint32  mp = 4;     // mp
+	required int32   x     = 5;  // 坐标x
+	required int32   y     = 6;  // 坐标y
+    optional int32 angle = 7;  // 球朝向（angle、face是互斥的，优先face。face值为0，使用angle。angle值范围为0-360）
+    optional uint32 face = 8;  // 球朝向的目标球ID(注意是球ID，不是玩家ID)
+}
+
+// 移动数据
+message BallMove {
+	required uint32 id = 1; // 球ID
+	required int32  x  = 2; // 坐标x
+	required int32  y  = 3; // 坐标y
+	optional uint32 state = 4;	//玩家所处的状态（不包括站立、普通行走）： 107冲刺 2奔跑 100 普通攻击 (100之后均为技能ID，详细参见 config\bev_skill\Readme.md)
+    optional int32 angle = 5;       // 球朝向（angle、face是互斥的，优先face。face值为0，使用angle。angle值范围为0-360）
+    optional uint32 face = 6;      // 球朝向的目标球ID(注意是球ID，不是玩家ID)
+}
+
+// 吃球
+message BallEat {
+	required uint32 source  = 1; // 吃的球ID
+	required uint32 target  = 2; // 被吃的球ID
+}
+// 攻击
+message HitMsg {
+	required uint32 source  = 1; // 发起球ID
+	required uint32 target  = 2; // 目标球ID
+	optional int32 addHp 	= 3; // 增加的血
+	optional uint32 curHp 	= 4; // 结算后当前血量
+}
+
+enum MapObjectConfigType {
+	Empty             = 0;  // 空地
+	Block             = 1;  // 硬阻挡
+};
+
+enum BallType {
+    Player = 1;         //玩家类型
+
+    FoodBegin = 10;
+    FoodNormal = 11;    //食物(普通)
+    FoodHammer = 12;    //食物(锤子)
+    FoodBomb = 13;      //食物(炸弹)
+    FoodEnd = 19;
+
+    FeedBegin = 20;
+    FeedNormal = 21;    //动态障碍物，可敲碎
+    FeedEnd = 29;
+    
+    SkillBegin = 30;
+    SkillHammer = 31;   //技能球(锤子)
+    SkillBomb = 32;     //技能球(炸弹)
+    SkillEnd = 39;
+}
